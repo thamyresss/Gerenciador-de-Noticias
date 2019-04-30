@@ -1,21 +1,120 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand">Gerenciador de Notícias</a>
+  <a class="nav-item nav-link" href="#" (click)="telaInicial()">Home</a>
+  <a class="nav-item nav-link active" href="#" (click)="telaPublicar()">Publicar <span class="sr-only">(current)</span></a>
+  <a class="nav-item nav-link" href="#" (click)="telaCadastrar()">Cadastrar</a>
+  <a class="nav-item nav-link" href="#" (click)="telaEstatistica()">Estatística</a>
+</nav>
+<div class="container">
+  <div *ngIf="tela == 'inicial'">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-text">
+        Notícias
+      </span>
+    </nav>
+    <div *ngFor="let n of service.todasNoticias()" class="jumbotron">
+
+      <div *ngIf="n.publicar">
+        <h1 class="display-5">{{ n.titulo }}
+        </h1>
+        <h3>{{ n.noticia}}</h3>
+      </div>
+
+      <hr class="my-4">
+
+      <p class="lead">
+        <a (click)="telaNoticia(n)" class="btn btn-outline-info" href="#" role="button">Ler</a>
+      </p>
+    </div>
+
+  </div>
+  <div *ngIf="tela == 'noticia'">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-text">
+        Notícia
+      </span>
+    </nav>
+    <div>
+      <h5>{{ salvarNoticia.noticia}}</h5>
+      <h6>{{ salvarNoticia.autor}}</h6>
+    </div>
+  </div>
+  <div *ngIf="tela == 'cadastrar'">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-text">
+        Cadastrar
+      </span>
+    </nav>
+    <form #cadastro="ngForm" (submit)="salvar()">
+      <div class="form-group">
+        <label for="autor">Autor</label>
+        <select class="form-control" name="autor" [(ngModel)]="autor" required>
+          <option *ngFor="let autor of service.listaDeAutores()">{{autor.nome}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="titulo" class="form-control" name="titulo" id="titulo" [(ngModel)]="titulo" required>
+        <small class="form-text text-muted">Informe o título.</small>
+      </div>
+      <div class="form-group">
+        <label for="noticia">Notícia</label>
+        <textarea class="form-control" name="noticia" id="noticia" rows="3" [(ngModel)]="noticia" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-outline-info" [disabled]="!cadastro.form.valid" (click)="salvar() || telaPublicar()">Salvar</button>
+    </form>
+  </div>
+  <div *ngIf="tela == 'publicar'">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-text">
+        Publicar
+      </span>
+    </nav>
+    <div *ngFor="let n of service.todasNoticias()">
+      <div *ngIf="n.publicar != true">
+        <h5>{{ n.noticia}}</h5><button (click)="service.publicadas(n) " class="btn btn-outline-info">Publicar</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="tela == 'estatistica'">
+    <nav class="navbar navbar-light bg-light">
+      <span class="navbar-text">
+        Estatística
+      </span>
+    </nav>
+    <h5>Quantidade de notícias por autor:</h5>
+    <table class="table table-hover table-info">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Views</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let autor of service.listaDeAutores()">
+          <td>{{autor.nome}}</td>
+          <td>{{autor.noticia}}</td>
+        </tr>
+    </tbody>
+    </table>
+    <br>
+    <h5>Nome do autor que mais publica notícias: {{service.autorMaisPublicou().nome}}</h5>
+    <br>
+    <h5>Ranking de notícias</h5>
+    <table class="table table-hover table-info">
+      <thead>
+        <tr>
+          <th scope="col">Ranking</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ranking of service.rankingNoticias()">
+          <td>{{ranking.titulo}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+
 
 <router-outlet></router-outlet>
